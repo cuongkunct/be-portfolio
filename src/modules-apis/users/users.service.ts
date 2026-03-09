@@ -29,4 +29,38 @@ export class UsersService {
     async findOne(username: string): Promise<UserDocument | null> {
         return this.userModel.findOne({ username }).exec();
     }
+
+    async findById(id: string): Promise<UserDocument | null> {
+        return this.userModel.findById(id).exec();
+    }
+
+    async setCurrentRefreshToken(refreshToken: string, userId: string) {
+        const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+        await this.userModel.findByIdAndUpdate(userId, {
+            refreshToken: currentHashedRefreshToken
+        });
+    }
+
+    async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+        const user = await this.findById(userId);
+        if (!user || !user.refreshToken) {
+            return null;
+        }
+
+        const isRefreshTokenMatching = await bcrypt.compare(
+            refreshToken,
+            user.refreshToken
+        );
+
+        if (isRefreshTokenMatching) {
+            return user;
+        }
+        return null;
+    }
+
+    async removeRefreshToken(userId: string) {
+        return this.userModel.findByIdAndUpdate(userId, {
+            $unset: { refreshToken: "" }
+        });
+    }
 }

@@ -1,29 +1,29 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { BlogService } from './blog.service';
-import { CreateBlogDto, UpdateBlogDto } from './dto/blog.dto';
+import { ProjectsService } from './projects.service';
+import { CreateProjectDto, UpdateProjectDto } from './dto/create-project.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { CloudinaryService } from '../../modules-systems/cloudinary/cloudinary.service';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 
-@ApiTags('Blog')
-@Controller('blog')
-export class BlogController {
+@ApiTags('Projects')
+@Controller('projects')
+export class ProjectsController {
     constructor(
-        private readonly blogService: BlogService,
+        private readonly projectsService: ProjectsService,
         private readonly cloudinaryService: CloudinaryService,
     ) { }
 
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Create new blog post' })
+    @ApiOperation({ summary: 'Create new project' })
     @UseGuards(JwtAuthGuard)
     @Post()
-    create(@Body() createBlogDto: CreateBlogDto) {
-        return this.blogService.create(createBlogDto);
+    create(@Body() createProjectDto: CreateProjectDto) {
+        return this.projectsService.create(createProjectDto);
     }
 
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Upload blog cover image and return URL' })
+    @ApiOperation({ summary: 'Upload project image and return URL' })
     @ApiConsumes('multipart/form-data')
     @ApiBody({
         schema: {
@@ -44,37 +44,31 @@ export class BlogController {
         return { imageUrl: result.secure_url };
     }
 
-    @ApiOperation({ summary: 'Get all blog posts' })
+    @ApiOperation({ summary: 'Get all projects' })
     @Get()
     findAll() {
-        return this.blogService.findAll();
+        return this.projectsService.findAll();
     }
 
-    @ApiOperation({ summary: 'Get a single blog post by slug' })
-    @Get('slug/:slug')
-    findBySlug(@Param('slug') slug: string) {
-        return this.blogService.findBySlug(slug);
-    }
-
-    @ApiOperation({ summary: 'Get a single blog post by ID' })
+    @ApiOperation({ summary: 'Get a single project by ID' })
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.blogService.findOne(id);
+        return this.projectsService.findOne(id);
     }
 
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update blog post by ID' })
+    @ApiOperation({ summary: 'Update project by ID' })
     @UseGuards(JwtAuthGuard)
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
-        return this.blogService.update(id, updateBlogDto);
+    update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
+        return this.projectsService.update(id, updateProjectDto);
     }
 
     @ApiBearerAuth()
-    @ApiOperation({ summary: 'Delete blog post by ID' })
+    @ApiOperation({ summary: 'Delete project by ID' })
     @UseGuards(JwtAuthGuard)
     @Delete(':id')
     remove(@Param('id') id: string) {
-        return this.blogService.remove(id);
+        return this.projectsService.remove(id);
     }
 }

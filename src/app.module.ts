@@ -3,15 +3,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { SkillsModule } from './skills/skills.module';
-import { EducationModule } from './education/education.module';
-import { CertificationModule } from './certification/certification.module';
-import { ProjectsModule } from './projects/projects.module';
-import { BlogModule } from './blog/blog.module';
-import { SeederModule } from './seeder/seeder.module';
+import { UsersModule } from './modules-apis/users/users.module';
+import { AuthModule } from './modules-apis/auth/auth.module';
+import { CloudinaryModule } from './modules-systems/cloudinary/cloudinary.module';
+import { SkillsModule } from './modules-apis/skills/skills.module';
+import { EducationModule } from './modules-apis/education/education.module';
+import { CertificationModule } from './modules-apis/certification/certification.module';
+import { ProjectsModule } from './modules-apis/projects/projects.module';
+import { BlogModule } from './modules-apis/blog/blog.module';
+import { MONGODB_URI } from './common/constant/app.contant';
 
 @Module({
   imports: [
@@ -19,13 +19,7 @@ import { SeederModule } from './seeder/seeder.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI') || 'mongodb://localhost:27017/portfolio',
-      }),
-      inject: [ConfigService],
-    }),
+    MongooseModule.forRoot(MONGODB_URI as string),
     UsersModule,
     AuthModule,
     CloudinaryModule,
@@ -34,7 +28,6 @@ import { SeederModule } from './seeder/seeder.module';
     CertificationModule,
     ProjectsModule,
     BlogModule,
-    SeederModule,
   ],
   controllers: [AppController],
   providers: [AppService],

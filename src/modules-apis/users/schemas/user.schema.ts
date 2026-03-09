@@ -13,6 +13,9 @@ export class User {
 
     @Prop({ default: 'admin' })
     role: string;
+
+    @Prop({ required: false })
+    refreshToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
